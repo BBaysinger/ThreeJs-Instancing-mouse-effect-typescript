@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-import {glslify} from 'vite-plugin-glslify'
+import { glslify } from "vite-plugin-glslify";
 
 // https://vitejs.dev/config/
 export default defineConfig({

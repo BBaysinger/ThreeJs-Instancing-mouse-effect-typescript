@@ -1,13 +1,13 @@
-export function getMousePos(e){
-    const x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
-    const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
-    const target = e.target;
+export function getMousePos(e) {
+  const x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+  const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+  const target = e.target;
 
-    return {
-      x,
-      y,
-      target,
-    };
+  return {
+    x,
+    y,
+    target,
+  };
 }
 
 export const sinPaletteHead = `
@@ -19,14 +19,13 @@ export const sinPaletteHead = `
   vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d ){
     return a + b*cos( 6.28318*(c*t+d) );
   }
-`
-
+`;
 
 // Demo Utils
 
-export function getPaletteFromParams(defaultPalette = "black"){
-  let search = new URLSearchParams(window.location.search)
-  return search.get("palette") == null ? defaultPalette : search.get("palette")
+export function getPaletteFromParams(defaultPalette = "black") {
+  let search = new URLSearchParams(window.location.search);
+  return search.get("palette") == null ? defaultPalette : search.get("palette");
 }
 
 let palettes = [
@@ -37,24 +36,23 @@ let palettes = [
   "darkblue",
   "grey",
   "white",
-  "orange"
-]
+  "orange",
+];
 
-export function setupControls(palette){
-  window.addEventListener("keydown",(ev)=>{
-
+export function setupControls(palette) {
+  window.addEventListener("keydown", (ev) => {
     let currentI = palettes.indexOf(palette);
 
-    switch(ev.key){
+    switch (ev.key) {
       case "ArrowLeft":
-        let prevPalette = (currentI - 1) < 0 ? palettes.length-1: currentI - 1;
-        window.location.search = "?palette="+palettes[prevPalette]
+        let prevPalette = currentI - 1 < 0 ? palettes.length - 1 : currentI - 1;
+        window.location.search = "?palette=" + palettes[prevPalette];
         // window.location.reload()
-      break;
+        break;
       case "ArrowRight":
-        let nextPalette = (currentI + 1) % palettes.length
-        window.location.search = "?palette="+palettes[nextPalette]
-      break;
+        let nextPalette = (currentI + 1) % palettes.length;
+        window.location.search = "?palette=" + palettes[nextPalette];
+        break;
     }
-  })
+  });
 }

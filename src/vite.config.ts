@@ -1,7 +1,7 @@
 // vite.config.js
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 
-import {glslify} from 'vite-plugin-glslify'
+import { glslify } from "vite-plugin-glslify";
 
 export default defineConfig({
   plugins: [glslify()],
@@ -10,8 +10,8 @@ export default defineConfig({
       output: {
         entryFileNames: `[name].js`,
         chunkFileNames: `[name].js`,
-        assetFileNames: `[name].[ext]`
-      }
-    }
-  }
+        assetFileNames: `[name].[ext]`,
+      },
+    },
+  },
 });

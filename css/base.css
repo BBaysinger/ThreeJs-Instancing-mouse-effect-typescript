@@ -6,10 +6,10 @@
 
 :root {
   font-size: 14px;
-	--color-text: rgb(140, 146, 164);
-	--color-bg: #000;
-	--color-link: rgb(140, 146, 164);
-	--color-link-hover: #fff;
+  --color-text: rgb(140, 146, 164);
+  --color-bg: #000;
+  --color-link: rgb(140, 146, 164);
+  --color-link-hover: #fff;
   --page-padding: 1rem;
 }
 
@@ -26,7 +26,8 @@
   height: 100%;
 }
 
-html, body {
+html,
+body {
   width: 100vw;
   height: 100%;
   overflow: hidden;
@@ -36,26 +37,31 @@ body {
   margin: 0;
   color: var(--color-text);
   background-color: var(--color-bg);
-  font-family: ui-monospace,SFMono-Regular,Menlo,Roboto Mono,monospace;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Roboto Mono,
+    monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 .demo-2 {
-	--color-text: #000;
-	--color-link: #000;
-	--color-link-hover: #000;
+  --color-text: #000;
+  --color-link: #000;
+  --color-link-hover: #000;
 }
 
 .demo-3 {
-	--color-text: #e5e2ec;
-	--color-link: #cb0f40;
+  --color-text: #e5e2ec;
+  --color-link: #cb0f40;
 }
 
 /* Page Loader */
 .js .loading::before,
 .js .loading::after {
-  content: '';
+  content: "";
   position: fixed;
   z-index: 1000;
 }
@@ -77,13 +83,12 @@ body {
   opacity: 0.4;
   background: var(--color-link);
   animation: loaderAnim 0.7s linear infinite alternate forwards;
-
 }
 
 @keyframes loaderAnim {
   to {
     opacity: 1;
-    transform: scale3d(0.7,0.7,1);
+    transform: scale3d(0.7, 0.7, 1);
   }
 }
 
@@ -128,7 +133,7 @@ a:focus-visible {
 }
 
 .frame {
-	padding: var(--page-padding);
+  padding: var(--page-padding);
   position: fixed;
   top: 0;
   left: 0;
@@ -141,7 +146,7 @@ a:focus-visible {
   pointer-events: none;
   justify-items: start;
   grid-template-columns: auto auto;
-  grid-template-areas: 'title' 'prev' 'back' 'sub' 'sponsor' 'demos';
+  grid-template-areas: "title" "prev" "back" "sub" "sponsor" "demos";
 }
 
 .frame #cdawrap {
@@ -173,9 +178,9 @@ a:focus-visible {
 }
 
 .frame__demos {
-	grid-area: demos;
-	display: flex;
-	gap: 1rem;
+  grid-area: demos;
+  display: flex;
+  gap: 1rem;
 }
 
 @media screen and (min-width: 53em) {
@@ -186,10 +191,10 @@ a:focus-visible {
     grid-template-columns: auto auto auto 1fr;
     grid-template-rows: auto auto;
     align-content: space-between;
-    grid-template-areas: 'title prev back sponsor' 'demos demos demos sub';
+    grid-template-areas: "title prev back sponsor" "demos demos demos sub";
   }
-  .frame #cdawrap, .frame__sub {
+  .frame #cdawrap,
+  .frame__sub {
     justify-self: end;
   }
 }
-
