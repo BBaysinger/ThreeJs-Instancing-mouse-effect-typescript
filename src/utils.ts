@@ -1,7 +1,13 @@
-export function getMousePos(e) {
-  const x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
-  const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
-  const target = e.target;
+export function getMousePos(e: MouseEvent | TouchEvent) {
+  const x =
+    "changedTouches" in e
+      ? e.changedTouches[0].clientX
+      : (e as MouseEvent).clientX;
+  const y =
+    "changedTouches" in e
+      ? e.changedTouches[0].clientY
+      : (e as MouseEvent).clientY;
+  const target = e.target as EventTarget | null;
 
   return {
     x,
@@ -23,12 +29,12 @@ export const sinPaletteHead = `
 
 // Demo Utils
 
-export function getPaletteFromParams(defaultPalette = "black") {
-  let search = new URLSearchParams(window.location.search);
-  return search.get("palette") == null ? defaultPalette : search.get("palette");
+export function getPaletteFromParams(defaultPalette: string = "black"): string {
+  const search = new URLSearchParams(window.location.search);
+  return search.get("palette") ?? defaultPalette;
 }
 
-let palettes = [
+const palettes: string[] = [
   "black",
   "pink",
   "aquamarine",
@@ -39,18 +45,19 @@ let palettes = [
   "orange",
 ];
 
-export function setupControls(palette) {
-  window.addEventListener("keydown", (ev) => {
-    let currentI = palettes.indexOf(palette);
+export function setupControls(palette: string): void {
+  window.addEventListener("keydown", (ev: KeyboardEvent) => {
+    const currentI = palettes.indexOf(palette);
 
     switch (ev.key) {
       case "ArrowLeft":
-        let prevPalette = currentI - 1 < 0 ? palettes.length - 1 : currentI - 1;
+        const prevPalette =
+          currentI - 1 < 0 ? palettes.length - 1 : currentI - 1;
         window.location.search = "?palette=" + palettes[prevPalette];
         // window.location.reload()
         break;
       case "ArrowRight":
-        let nextPalette = (currentI + 1) % palettes.length;
+        const nextPalette = (currentI + 1) % palettes.length;
         window.location.search = "?palette=" + palettes[nextPalette];
         break;
     }
