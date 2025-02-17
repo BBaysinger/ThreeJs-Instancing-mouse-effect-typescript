@@ -26,7 +26,7 @@ import {
 } from "three";
 
 import { Rendering } from "./Rendering";
-import RoundedBox from "./RoundedBox";
+import RoundedBoxGeometry from "./RoundedBoxGeometry";
 
 interface InstancedMouseEffectOptions {
   speed?: number;
@@ -39,6 +39,7 @@ interface InstancedMouseEffectOptions {
   color?: string;
   colorDegrade?: number;
   shape?: "square" | "cylinder" | "torus" | "icosahedron" | BufferGeometry;
+  edgeRadius?: number;
 }
 
 class InstancedMouseEffect {
@@ -77,6 +78,9 @@ class InstancedMouseEffect {
     }
     if (opts.shape == null) {
       opts.shape = "square";
+    }
+    if (opts.edgeRadius == null) {
+      opts.edgeRadius = 0.15;
     }
 
     const canvas: HTMLCanvasElement =
@@ -137,7 +141,7 @@ class InstancedMouseEffect {
     const gridSize = grid * size;
 
     // const geometry = new BoxGeometry(size, size, size);
-    let geometry: BufferGeometry = new RoundedBox(size, size, size, 0.1, 4);
+    let geometry: BufferGeometry = new RoundedBoxGeometry(size, size, size, opts.edgeRadius, 4);
     if (typeof opts.shape == "string") {
       switch (opts.shape) {
         case "cylinder":
@@ -430,7 +434,14 @@ class InstancedMouseEffect {
 }
 
 if (process.env.NODE_ENV === "development") {
-  new InstancedMouseEffect();
+  new InstancedMouseEffect({
+    speed: 1,
+    frequency: 1,
+    mouseSize: 1,
+    rotationSpeed: 1,
+    colorDegrade: 1.5,
+    shape: "square", // cylinder, torus, icosahedron OR any THREE.Geometry
+  });
 }
 
 export default InstancedMouseEffect;
