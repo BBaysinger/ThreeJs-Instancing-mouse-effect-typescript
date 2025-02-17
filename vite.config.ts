@@ -18,13 +18,14 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "dist", // The output directory
+    outDir: "./dist", // The output directory
     emptyOutDir: true, // Clears the output directory before each build
     rollupOptions: {
       input: {
         main: "/index.html",
       },
     },
+    target: "es2020",
   },
   publicDir: "/public", // Keep `public/` as the static folder
   server: {

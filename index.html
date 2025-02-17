@@ -1,60 +1,16 @@
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mouse Effect with Instancing in Three.js | Demo 1 | Codrops</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta
-      name="description"
-      content="Demo 1 for tutorial on how to create a mouse effect with instancing in Three.js"
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0,  maximum-scale=1.0, user-scalable=no"
     />
-    <meta
-      name="keywords"
-      content="three.js, instancing, tutorial, mouse effect, interactive, 3d, webgl"
-    />
-    <meta name="author" content="Codrops" />
-    <link rel="shortcut icon" href="favicon.ico" />
-    <link rel="stylesheet" type="text/css" href="css/base.css" />
-    <script>
-      document.documentElement.className = "js";
-    </script>
+    <title>Offscreen Canvas DEMO</title>
   </head>
-  <body class="demo-1">
-    <main>
-      <header class="frame">
-        <h1 class="frame__title">Mouse Effect with Instancing in Three.js</h1>
-        <a class="frame__back" href="https://tympanus.net/codrops/?p=74529"
-          >Back to the article</a
-        >
-        <a
-          class="frame__prev"
-          href="https://tympanus.net/Development/SlicedTextEffect"
-          >Previous demo</a
-        >
-        <a class="frame__sub" href="https://tympanus.net/codrops/collective/"
-          >Subscribe</a
-        >
-        <nav class="frame__demos">
-          <span>Demo 1</span>
-          <a href="index2.html">Demo 2</a>
-          <a href="index3.html">Demo 3</a>
-        </nav>
-      </header>
-      <div class="content">
-        <div id="canvas-wrapper"><canvas id="canvas"></canvas></div>
-      </div>
-    </main>
-    <script src="./dist/index.js"></script>
-    <script>
-      new InstancedMouseEffect({
-        speed: 1,
-        frequency: 1,
-        mouseSize: 1,
-        rotationSpeed: 1,
-        color: "#1084ff",
-        colorDegrade: 1.5,
-        shape: "square", // cylinder, torus, icosahedron OR any THREE.Geometry
-      });
-    </script>
+  <body>
+    <div id="canvas-wrapper"><canvas id="canvas"></canvas></div>
+    <script type="module" src="./src/InstancedMouseEffect.ts"></script>
   </body>
 </html>
