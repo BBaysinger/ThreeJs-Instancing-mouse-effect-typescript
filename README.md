@@ -1,5 +1,7 @@
 # Mouse Effect with Three.js Instancing
 
+## Converted to TypeScript by Bradley Baysinger on 02/17/2025
+
 Demo for tutorial on creating interactive mouse effects with Three.js instancing.
 
 ![Mouse effect](https://tympanus.net/codrops/wp-content/uploads/2023/12/instancing.jpg)
