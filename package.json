@@ -11,13 +11,14 @@
     "pb": "prettier --write . && tsc -b && vite build"
   },
   "devDependencies": {
+    "@types/node": "^22.13.4",
     "@types/three": "^0.173.0",
     "@typescript-eslint/eslint-plugin": "^8.24.0",
     "@typescript-eslint/parser": "^8.24.0",
+    "prettier": "^3.5.1",
     "typescript": "~5.7.3",
     "vite": "^4.4.5",
-    "vite-tsconfig-paths": "^5.1.4",
-    "prettier": "^3.5.1"
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "dependencies": {
     "glsl-easings": "^1.0.0",
@@ -26,6 +27,7 @@
     "postprocessing": "^6.33.3",
     "stats-js": "^1.0.1",
     "three": "^0.155.0",
+    "three-glslify": "^2.0.2",
     "vite-plugin-glslify": "^2.0.2"
   }
 }

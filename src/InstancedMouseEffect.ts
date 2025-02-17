@@ -1,5 +1,6 @@
 import "./style.css";
 import { gsap } from "gsap";
+import glsl from "three-glslify";
 import {
   PCFSoftShadowMap,
   Vector3,
@@ -20,15 +21,33 @@ import {
   PlaneGeometry,
   MeshBasicMaterial,
   Raycaster,
+  BufferGeometry,
+  Color,
 } from "three";
 
 import { Rendering } from "./Rendering";
 import RoundedBox from "./RoundedBox";
 
+interface InstancedMouseEffectOptions {
+  speed?: number;
+  frequency?: number;
+  mouseSize?: number;
+  rotationSpeed?: number;
+  rotationAmount?: number;
+  mouseScaling?: number;
+  mouseIndent?: number;
+  color?: string;
+  colorDegrade?: number;
+  shape?: "square" | "cylinder" | "torus" | "icosahedron" | BufferGeometry;
+}
+
 class InstancedMouseEffect {
   rendering: Rendering;
   animation: gsap.core.Timeline;
-  constructor(opts = {}, follower = null) {
+  constructor(
+    opts: InstancedMouseEffectOptions = {},
+    follower: Mesh | null = null,
+  ) {
     if (opts.speed == null) {
       opts.speed = 1;
     }
@@ -118,7 +137,7 @@ class InstancedMouseEffect {
     const gridSize = grid * size;
 
     // const geometry = new BoxGeometry(size, size, size);
-    const geometry = new RoundedBox(size, size, size, 0.1, 4);
+    let geometry: BufferGeometry = new RoundedBox(size, size, size, 0.1, 4);
     if (typeof opts.shape == "string") {
       switch (opts.shape) {
         case "cylinder":
@@ -146,7 +165,9 @@ class InstancedMouseEffect {
     mesh.receiveShadow = true;
 
     const totalColor = material.color.r + material.color.g + material.color.b;
-    const color = new Vector3();
+    // const color = new Vector3();
+    const colorVector = new Vector3(1, 0, 0); // Example RGB values
+
     const weights = new Vector3();
     weights.x = material.color.r;
     weights.y = material.color.g;
@@ -170,11 +191,17 @@ class InstancedMouseEffect {
         mesh.setMatrixAt(i, dummy.matrix);
 
         const center = 1 - dummy.position.length() * 0.12 * opts.colorDegrade;
-        color.set(
+        colorVector.set(
           center * weights.x + (1 - weights.x),
           center * weights.y + (1 - weights.y),
           center * weights.z + (1 - weights.z),
         );
+        const color = new Color().setRGB(
+          colorVector.x,
+          colorVector.y,
+          colorVector.z,
+        );
+
         mesh.setColorAt(i, color);
 
         i++;
@@ -311,7 +338,11 @@ class InstancedMouseEffect {
         ...uniforms,
       };
     };
-    mesh.customDepthMaterial.depthPacking = RGBADepthPacking;
+
+    if (mesh.customDepthMaterial instanceof MeshDepthMaterial) {
+      mesh.customDepthMaterial.depthPacking = RGBADepthPacking;
+    }
+
     rendering.scene.add(mesh);
 
     const t1 = gsap.timeline();
@@ -362,7 +393,7 @@ class InstancedMouseEffect {
     });
 
     const vel = new Vector2();
-    const tick = (t, _delta) => {
+    const tick = (t: number, _delta: number) => {
       uTime.value = t;
 
       const v3 = new Vector2();
@@ -404,4 +435,4 @@ if (process.env.NODE_ENV === "development") {
 
 export default InstancedMouseEffect;
 
-window["InstancedMouseEffect"] = InstancedMouseEffect;
+(window as any)["InstancedMouseEffect"] = InstancedMouseEffect;

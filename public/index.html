@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Mouse Effect with Instancing in Three.js | Demo 3 | Codrops</title>
+    <title>Mouse Effect with Instancing in Three.js | Demo 1 | Codrops</title>
     <meta
       name="description"
-      content="Demo 3 for tutorial on how to create a mouse effect with instancing in Three.js"
+      content="Demo 1 for tutorial on how to create a mouse effect with instancing in Three.js"
     />
     <meta
       name="keywords"
@@ -18,9 +18,8 @@
     <script>
       document.documentElement.className = "js";
     </script>
-    <script src="https://unpkg.com/three@0.155.0/build/three.min.js"></script>
   </head>
-  <body class="demo-3">
+  <body class="demo-1">
     <main>
       <header class="frame">
         <h1 class="frame__title">Mouse Effect with Instancing in Three.js</h1>
@@ -36,41 +35,26 @@
           >Subscribe</a
         >
         <nav class="frame__demos">
-          <a href="index.html">Demo 1</a>
+          <span>Demo 1</span>
           <a href="index2.html">Demo 2</a>
-          <span>Demo 3</span>
+          <a href="index3.html">Demo 3</a>
         </nav>
       </header>
       <div class="content">
         <div id="canvas-wrapper"><canvas id="canvas"></canvas></div>
       </div>
     </main>
-    <script src="./dist/index.js"></script>
+    <script src="./index.js" type="module"></script>
     <script>
-      follower = new THREE.Mesh(
-        new THREE.SphereGeometry(),
-        new THREE.MeshPhysicalMaterial({
-          emissive: 0x000000,
-          color: "#ff4080",
-          color: "#cb0f40",
-          roughness: 0,
-          metalness: 0.4,
-        }),
-      );
-      follower.scale.setScalar(0.4);
-
-      let effect = new InstancedMouseEffect(
-        {
-          speed: 1,
-          frequency: 1,
-          mouseSize: 1,
-          rotationSpeed: 1,
-          color: "#ddd",
-          shape: "square", // cylinder, torus, icosahedron OR any THREE.Geometry
-        },
-        follower,
-      );
-      effect.rendering.scene.add(follower);
+      new InstancedMouseEffect({
+        speed: 1,
+        frequency: 1,
+        mouseSize: 1,
+        rotationSpeed: 1,
+        color: "#1084ff",
+        colorDegrade: 1.5,
+        shape: "square", // cylinder, torus, icosahedron OR any THREE.Geometry
+      });
     </script>
   </body>
 </html>

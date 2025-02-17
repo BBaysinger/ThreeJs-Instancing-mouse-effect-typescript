@@ -20,7 +20,13 @@ export default defineConfig({
   build: {
     outDir: "dist", // The output directory
     emptyOutDir: true, // Clears the output directory before each build
+    rollupOptions: {
+      input: {
+        main: "/index.html",
+      },
+    },
   },
+  publicDir: "/public", // Keep `public/` as the static folder
   server: {
     host: true, // Ensures it binds to all network interfaces
     port: 5173, // Specify the port explicitly

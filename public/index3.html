@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mouse Effect with Instancing in Three.js | Demo 3 | Codrops</title>
+    <meta
+      name="description"
+      content="Demo 3 for tutorial on how to create a mouse effect with instancing in Three.js"
+    />
+    <meta
+      name="keywords"
+      content="three.js, instancing, tutorial, mouse effect, interactive, 3d, webgl"
+    />
+    <meta name="author" content="Codrops" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="css/base.css" />
+    <script>
+      document.documentElement.className = "js";
+    </script>
+    <script src="https://unpkg.com/three@0.155.0/build/three.min.js"></script>
+  </head>
+  <body class="demo-3">
+    <main>
+      <header class="frame">
+        <h1 class="frame__title">Mouse Effect with Instancing in Three.js</h1>
+        <a class="frame__back" href="https://tympanus.net/codrops/?p=74529"
+          >Back to the article</a
+        >
+        <a
+          class="frame__prev"
+          href="https://tympanus.net/Development/SlicedTextEffect"
+          >Previous demo</a
+        >
+        <a class="frame__sub" href="https://tympanus.net/codrops/collective/"
+          >Subscribe</a
+        >
+        <nav class="frame__demos">
+          <a href="index.html">Demo 1</a>
+          <a href="index2.html">Demo 2</a>
+          <span>Demo 3</span>
+        </nav>
+      </header>
+      <div class="content">
+        <div id="canvas-wrapper"><canvas id="canvas"></canvas></div>
+      </div>
+    </main>
+    <script src="./index.js" type="module"></script>
+    <script>
+      follower = new THREE.Mesh(
+        new THREE.SphereGeometry(),
+        new THREE.MeshPhysicalMaterial({
+          emissive: 0x000000,
+          color: "#ff4080",
+          color: "#cb0f40",
+          roughness: 0,
+          metalness: 0.4,
+        }),
+      );
+      follower.scale.setScalar(0.4);
+
+      let effect = new InstancedMouseEffect(
+        {
+          speed: 1,
+          frequency: 1,
+          mouseSize: 1,
+          rotationSpeed: 1,
+          color: "#ddd",
+          shape: "square", // cylinder, torus, icosahedron OR any THREE.Geometry
+        },
+        follower,
+      );
+      effect.rendering.scene.add(follower);
+    </script>
+  </body>
+</html>
