@@ -1,7 +1,7 @@
 import "./style.css";
 import { gsap } from "gsap";
 
-import { Rendering } from "./rendering";
+import { Rendering } from "./Rendering";
 
 import * as THREE from "three";
 import RoundedBox from "./RoundedBox";
@@ -20,8 +20,8 @@ class InstancedMouseEffect {
     if (opts.rotationSpeed == null) {
       opts.rotationSpeed = 1;
     }
-    if (opts.rotationAmmount == null) {
-      opts.rotationAmmount = 0;
+    if (opts.rotationAmount == null) {
+      opts.rotationAmount = 0;
     }
     if (opts.mouseScaling == null) {
       opts.mouseScaling = 0;
@@ -250,7 +250,7 @@ class InstancedMouseEffect {
       },
       uConfig2: {
         value: new THREE.Vector4(
-          opts.rotationAmmount,
+          opts.rotationAmount,
           opts.mouseScaling,
           opts.mouseIndent,
         ),
@@ -340,7 +340,7 @@ class InstancedMouseEffect {
     });
 
     let vel = new THREE.Vector2();
-    const tick = (t, delta) => {
+    const tick = (t, _delta) => {
       uTime.value = t;
 
       let v3 = new THREE.Vector2();

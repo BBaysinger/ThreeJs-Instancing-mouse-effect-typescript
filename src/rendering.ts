@@ -1,24 +1,58 @@
 import {
-  BloomEffect,
+  // BloomEffect,
   EffectComposer,
-  EffectPass,
-  NormalPass,
+  // EffectPass,
+  // NormalPass,
   OverrideMaterialManager,
   RenderPass,
-  SSAOEffect,
-  ToneMappingEffect,
+  // SSAOEffect,
+  // ToneMappingEffect,
 } from "postprocessing";
-import * as THREE from "three";
+// import * as THREE from "three";
+import {
+  WebGLRenderer,
+  OrthographicCamera,
+  PerspectiveCamera,
+  Scene,
+  Clock,
+  Color,
+} from "three";
 import Stats from "stats-js";
 
 let stats = new Stats();
 // document.body.append(stats.dom)
 
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { N8AOPostPass } from "n8ao";
 
+type Viewport = {
+  canvas: {
+    width: number;
+    height: number;
+    dpr: number;
+  };
+  scene: {
+    width: number;
+    height: number;
+  };
+  screen: {
+    width: number;
+    height: number;
+  };
+};
+
 export class Rendering {
-  constructor(canvas, usePostProcess = false) {
+  canvas: HTMLCanvasElement;
+  renderer: WebGLRenderer;
+  vp: Viewport;
+  camera: PerspectiveCamera | OrthographicCamera;
+  scene: Scene;
+  clock: Clock;
+  disposed: boolean;
+  composer: EffectComposer | null = null;
+  usePostProcess: boolean;
+
+  constructor(canvas: HTMLCanvasElement, usePostProcess = false) {
     this.canvas = canvas;
     // let hex = "#"+ palette.highlight.getHexString()
     // document.documentElement.style.setProperty("--text", hex);
@@ -38,7 +72,7 @@ export class Rendering {
         height: window.innerHeight,
       },
     };
-    this.renderer = new THREE.WebGLRenderer({
+    this.renderer = new WebGLRenderer({
       antialias: false,
       canvas,
       stencil: false,
@@ -57,7 +91,7 @@ export class Rendering {
       ratio = 1;
     }
 
-    this.camera = new THREE.OrthographicCamera(
+    this.camera = new OrthographicCamera(
       -size * ratio,
       size * ratio,
       size * ratioW,
@@ -66,16 +100,16 @@ export class Rendering {
       1000,
     );
 
-    this.scene = new THREE.Scene();
+    this.scene = new Scene();
 
     // this.scene.background = palette.BG.clone()
 
-    this.clock = new THREE.Clock();
+    this.clock = new Clock();
 
     // this.vp.scene = this.getViewSizeAtDepth();
 
     this.disposed = false;
-    // this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace
+    // this.renderer.outputColorSpace = LinearSRGBColorSpace
     OverrideMaterialManager.workaroundEnabled = true;
     if (usePostProcess) {
       const composer = new EffectComposer(this.renderer);
@@ -130,7 +164,7 @@ export class Rendering {
       // }
 
       // composer.addPass(normalPass)
-      // composer.addPass(new EffectPass(this.camera, new SSAOEffect(this.camera, normalPass.texture, {resolutionScale: 0.75, intensity: 2, color: new THREE.Color(0x000000), radius: 0.020, samples: 10, rings: 4 })));
+      // composer.addPass(new EffectPass(this.camera, new SSAOEffect(this.camera, normalPass.texture, {resolutionScale: 0.75, intensity: 2, color: new Color(0x000000), radius: 0.020, samples: 10, rings: 4 })));
       //
       const n8aopass = new N8AOPostPass(
         this.scene,
@@ -141,7 +175,7 @@ export class Rendering {
       n8aopass.configuration.aoRadius = 0.2;
       n8aopass.configuration.distanceFalloff = 0.5;
       n8aopass.configuration.intensity = 20.0;
-      n8aopass.configuration.color = new THREE.Color(0, 0, 0);
+      n8aopass.configuration.color = new Color(0, 0, 0);
       n8aopass.configuration.aoSamples = 8;
       n8aopass.configuration.denoiseSamples = 4;
       n8aopass.configuration.denoiseRadius = 12;
@@ -153,7 +187,7 @@ export class Rendering {
       n8aopass.screenSpaceRadius = true;
       composer.addPass(n8aopass);
       // n8aopass.setDisplayMode("Split");
-      // composer.addPass(new EffectPass(this.camera, new ToneMappingEffect({ mode: THREE.ACESFilmicToneMapping })));
+      // composer.addPass(new EffectPass(this.camera, new ToneMappingEffect({ mode: ACESFilmicToneMapping })));
 
       this.composer = composer;
     }
@@ -166,17 +200,26 @@ export class Rendering {
   }
   dispose() {}
   getViewSizeAtDepth(depth = 0) {
-    const fovInRadians = (this.camera.fov * Math.PI) / 180;
+    let fovInRadians: number = 0;
+
+    if (this.camera instanceof PerspectiveCamera) {
+      fovInRadians = (this.camera.fov * Math.PI) / 180;
+    } else if (this.camera instanceof OrthographicCamera) {
+      fovInRadians = (this.camera.zoom * Math.PI) / 180;
+    }
+
     const height = Math.abs(
       (this.camera.position.z - depth) * Math.tan(fovInRadians / 2) * 2,
     );
-    return { width: height * this.camera.aspect, height };
+    return this.camera instanceof PerspectiveCamera
+      ? { width: height * this.camera.aspect, height }
+      : { width: height, height };
   }
   init() {}
   render() {
     stats.begin();
     if (this.usePostProcess) {
-      this.composer.render();
+      this.composer?.render();
     } else {
       this.renderer.render(this.scene, this.camera);
     }
@@ -193,20 +236,26 @@ export class Rendering {
 
     this.renderer.setSize(this.vp.canvas.width, this.vp.canvas.height, false);
 
-    let size = 4;
-    let ratio = this.vp.canvas.width / this.vp.canvas.height;
+    const viewSize = 4;
+    let aspectRatio = this.vp.canvas.width / this.vp.canvas.height;
     let ratioW = this.vp.canvas.height / this.vp.canvas.width;
 
-    if (ratio > ratioW) {
+    if (aspectRatio > ratioW) {
       ratioW = 1;
     } else {
-      ratio = 1;
+      aspectRatio = 1;
     }
 
-    this.camera.left = -size * ratio;
-    this.camera.right = size * ratio;
-    this.camera.top = size * ratioW;
-    this.camera.bottom = -size * ratioW;
+    if (this.camera instanceof PerspectiveCamera) {
+      this.camera.aspect = aspectRatio;
+      this.camera.updateProjectionMatrix();
+    } else if (this.camera instanceof OrthographicCamera) {
+      this.camera.left = -viewSize * aspectRatio;
+      this.camera.right = viewSize * aspectRatio;
+      this.camera.top = viewSize;
+      this.camera.bottom = -viewSize;
+      this.camera.updateProjectionMatrix();
+    }
 
     // this.camera.aspect = this.vp.canvas.width / this.vp.canvas.height;
     this.camera.updateProjectionMatrix();
