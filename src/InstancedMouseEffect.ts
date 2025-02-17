@@ -1,12 +1,33 @@
 import "./style.css";
 import { gsap } from "gsap";
+import {
+  PCFSoftShadowMap,
+  Vector3,
+  HemisphereLight,
+  AmbientLight,
+  DirectionalLight,
+  CylinderGeometry,
+  IcosahedronGeometry,
+  TorusGeometry,
+  MeshPhysicalMaterial,
+  InstancedMesh,
+  Object3D,
+  Vector2,
+  Vector4,
+  MeshDepthMaterial,
+  RGBADepthPacking,
+  Mesh,
+  PlaneGeometry,
+  MeshBasicMaterial,
+  Raycaster,
+} from "three";
 
 import { Rendering } from "./Rendering";
-
-import * as THREE from "three";
 import RoundedBox from "./RoundedBox";
 
 class InstancedMouseEffect {
+  rendering: Rendering;
+  animation: gsap.core.Timeline;
   constructor(opts = {}, follower = null) {
     if (opts.speed == null) {
       opts.speed = 1;
@@ -38,19 +59,22 @@ class InstancedMouseEffect {
     if (opts.shape == null) {
       opts.shape = "square";
     }
+
+    const canvas: HTMLCanvasElement =
+      document.querySelector("#canvas") || new HTMLCanvasElement();
     // Renderer up
-    let rendering = new Rendering(document.querySelector("#canvas"), false);
+    const rendering = new Rendering(canvas, false);
     rendering.renderer.shadowMap.enabled = true;
-    rendering.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    rendering.renderer.shadowMap.type = PCFSoftShadowMap;
     rendering.camera.position.z = 40;
     rendering.camera.position.y = 40;
     rendering.camera.position.x = 40;
-    rendering.camera.lookAt(new THREE.Vector3(0, 0, 0));
+    rendering.camera.lookAt(new Vector3(0, 0, 0));
     this.rendering = rendering;
 
-    //  follower = new THREE.Mesh(
-    //    new THREE.BoxGeometry(),
-    //    new THREE.MeshPhysicalMaterial({
+    //  follower = new Mesh(
+    //    new BoxGeometry(),
+    //    new MeshPhysicalMaterial({
     //      emissive: 0x000000,
     //      color:  "#ff4080",
     //      color:  "#2040bb",
@@ -60,19 +84,19 @@ class InstancedMouseEffect {
     //  )
     // rendering.scene.add(follower)
 
-    // let controls = new OrbitControls(rendering.camera, rendering.canvas)
+    // const controls = new OrbitControls(rendering.camera, rendering.canvas)
 
-    let uTime = { value: 0 };
+    const uTime = { value: 0 };
 
     // Light Setup
-    rendering.scene.add(new THREE.HemisphereLight(0x9f9f9f, 0xffffff, 1));
-    rendering.scene.add(new THREE.AmbientLight(0xffffff, 1));
-    let d2 = new THREE.DirectionalLight(0x909090, 1);
+    rendering.scene.add(new HemisphereLight(0x9f9f9f, 0xffffff, 1));
+    rendering.scene.add(new AmbientLight(0xffffff, 1));
+    const d2 = new DirectionalLight(0x909090, 1);
     rendering.scene.add(d2);
     d2.position.set(-1, 0.5, 1);
     d2.position.multiplyScalar(10);
 
-    let d1 = new THREE.DirectionalLight(0xffffff, 4);
+    const d1 = new DirectionalLight(0xffffff, 4);
     rendering.scene.add(d1);
     d1.position.set(1, 0.5, 1);
     d1.position.multiplyScalar(10);
@@ -89,41 +113,41 @@ class InstancedMouseEffect {
 
     // DEMO CODE
 
-    let grid = 55;
-    let size = 0.5;
-    let gridSize = grid * size;
+    const grid = 55;
+    const size = 0.5;
+    const gridSize = grid * size;
 
-    let geometry = new THREE.BoxGeometry(size, size, size);
-    geometry = new RoundedBox(size, size, size, 0.1, 4);
+    // const geometry = new BoxGeometry(size, size, size);
+    const geometry = new RoundedBox(size, size, size, 0.1, 4);
     if (typeof opts.shape == "string") {
       switch (opts.shape) {
         case "cylinder":
-          geometry = new THREE.CylinderGeometry(size, size, size);
+          geometry = new CylinderGeometry(size, size, size);
           break;
         case "torus":
-          geometry = new THREE.TorusGeometry(size * 0.5, size * 0.3);
+          geometry = new TorusGeometry(size * 0.5, size * 0.3);
           break;
         case "icosahedron":
-          geometry = new THREE.IcosahedronGeometry(size, 0);
+          geometry = new IcosahedronGeometry(size, 0);
           break;
       }
     } else {
       geometry = opts.shape;
     }
 
-    let material = new THREE.MeshPhysicalMaterial({
+    const material = new MeshPhysicalMaterial({
       color: opts.color,
       metalness: 0,
       roughness: 0.0,
     });
-    let mesh = new THREE.InstancedMesh(geometry, material, grid * grid);
+    const mesh = new InstancedMesh(geometry, material, grid * grid);
 
     mesh.castShadow = true;
     mesh.receiveShadow = true;
 
     const totalColor = material.color.r + material.color.g + material.color.b;
-    const color = new THREE.Vector3();
-    const weights = new THREE.Vector3();
+    const color = new Vector3();
+    const weights = new Vector3();
     weights.x = material.color.r;
     weights.y = material.color.g;
     weights.z = material.color.b;
@@ -131,7 +155,7 @@ class InstancedMouseEffect {
     weights.multiplyScalar(-0.5);
     weights.addScalar(1);
 
-    let dummy = new THREE.Object3D();
+    const dummy = new Object3D();
 
     let i = 0;
     for (let x = 0; x < grid; x++)
@@ -145,7 +169,7 @@ class InstancedMouseEffect {
         dummy.updateMatrix();
         mesh.setMatrixAt(i, dummy.matrix);
 
-        let center = 1 - dummy.position.length() * 0.12 * opts.colorDegrade;
+        const center = 1 - dummy.position.length() * 0.12 * opts.colorDegrade;
         color.set(
           center * weights.x + (1 - weights.x),
           center * weights.y + (1 - weights.y),
@@ -155,7 +179,7 @@ class InstancedMouseEffect {
 
         i++;
       }
-    let vertexHead = glsl`
+    const vertexHead = glsl`
 
       uniform float uTime;
       uniform float uAnimate;
@@ -166,7 +190,8 @@ class InstancedMouseEffect {
 
       float map(float value, float min1, float max1, float min2, float max2) {
         return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
-        }
+      }
+
       mat4 rotationMatrix(vec3 axis, float angle) {
         axis = normalize(axis);
         float s = sin(angle);
@@ -177,71 +202,71 @@ class InstancedMouseEffect {
                     oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
                     oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
                     0.0,                                0.0,                                0.0,                                1.0);
-    }
+        }
 
-    vec3 rotate(vec3 v, vec3 axis, float angle) {
-      mat4 m = rotationMatrix(axis, angle);
-      return (m * vec4(v, 1.0)).xyz;
-    }
-    float sdSegment( in vec2 p, in vec2 a, in vec2 b )
-    {
-        vec2 pa = p-a, ba = b-a;
-        float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
-        return length( pa - ba*h );
-    }
+        vec3 rotate(vec3 v, vec3 axis, float angle) {
+          mat4 m = rotationMatrix(axis, angle);
+          return (m * vec4(v, 1.0)).xyz;
+        }
+
+        float sdSegment( in vec2 p, in vec2 a, in vec2 b )
+        {
+            vec2 pa = p-a, ba = b-a;
+            float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
+            return length( pa - ba*h );
+        }
+
         #pragma glslify: ease = require(glsl-easings/cubic-in-out)
         #pragma glslify: ease = require(glsl-easings/cubic-out)
-      void main(){
+
+        void main() {
     `;
-    let projectVertex = glsl`
+    const projectVertex = glsl`
 
-            vec4 position = instanceMatrix[3];
-            float toCenter = length(position.xz) ;
+        vec4 position = instanceMatrix[3];
+        float toCenter = length(position.xz) ;
 
+        // float mouseTrail = length(position.xz- uPos0.xy);
+        float mouseTrail = sdSegment(position.xz, uPos0, uPos1 );
+        mouseTrail = smoothstep(2.0, 5. * uConfig.z , mouseTrail)  ;
 
-            // float mouseTrail = length(position.xz- uPos0.xy);
-            float mouseTrail = sdSegment(position.xz, uPos0, uPos1 );
-            mouseTrail = smoothstep(2.0, 5. * uConfig.z , mouseTrail)  ;
+        // Mouse Scale
+        transformed *= 1. + cubicOut(1.0-mouseTrail) * uConfig2.y;
 
-            // Mouse Scale
-            transformed *= 1. + cubicOut(1.0-mouseTrail) * uConfig2.y;
+        // Instance Animation
+        float start = 0. + toCenter * 0.02;
+        float end = start+  (toCenter + 1.5) * 0.06;
+        float anim = (map(clamp(uAnimate, start,end) , start, end, 0., 1.));
 
+        transformed = rotate(transformed, vec3(0., 1., 1. ),uConfig2.x * (anim * 3.14+  uTime * uConfig.x + toCenter * 0.4 * uConfig.w) );
 
-            // Instance Animation
-            float start = 0. + toCenter * 0.02;
-            float end = start+  (toCenter + 1.5) * 0.06;
-            float anim = (map(clamp(uAnimate, start,end) , start, end, 0., 1.));
+        // Mouse Offset
+        transformed.y += (-1.0 * (1.-mouseTrail)) * uConfig2.z;
 
+        transformed.xyz *= cubicInOut(anim);
+        transformed.y += cubicInOut(1.-anim) * 1.;
 
-            transformed = rotate(transformed, vec3(0., 1., 1. ),uConfig2.x * (anim * 3.14+  uTime * uConfig.x + toCenter * 0.4 * uConfig.w) );
+        transformed.y += sin(uTime * 2. * uConfig.x + toCenter * uConfig.y) * 0.1;
 
-            // Mouse Offset
-            transformed.y += (-1.0 * (1.-mouseTrail)) * uConfig2.z;
+        vec4 mvPosition = vec4( transformed, 1.0 );
 
-            transformed.xyz *= cubicInOut(anim);
-            transformed.y += cubicInOut(1.-anim) * 1.;
+        #ifdef USE_INSTANCING
 
-            transformed.y += sin(uTime * 2. * uConfig.x + toCenter * uConfig.y) * 0.1;
+        mvPosition = instanceMatrix * mvPosition;
 
-            vec4 mvPosition = vec4( transformed, 1.0 );
+        #endif
 
-            #ifdef USE_INSTANCING
+        mvPosition = modelViewMatrix * mvPosition;
 
-              mvPosition = instanceMatrix * mvPosition;
-
-            #endif
-
-            mvPosition = modelViewMatrix * mvPosition;
-
-            gl_Position = projectionMatrix * mvPosition;
+        gl_Position = projectionMatrix * mvPosition;
     `;
-    let uniforms = {
+    const uniforms = {
       uTime: uTime,
-      uPos0: { value: new THREE.Vector2() },
-      uPos1: { value: new THREE.Vector2() },
+      uPos0: { value: new Vector2() },
+      uPos1: { value: new Vector2() },
       uAnimate: { value: 0 },
       uConfig: {
-        value: new THREE.Vector4(
+        value: new Vector4(
           opts.speed,
           opts.frequency,
           opts.mouseSize,
@@ -249,7 +274,7 @@ class InstancedMouseEffect {
         ),
       },
       uConfig2: {
-        value: new THREE.Vector4(
+        value: new Vector4(
           opts.rotationAmount,
           opts.mouseScaling,
           opts.mouseIndent,
@@ -271,7 +296,7 @@ class InstancedMouseEffect {
       };
     };
 
-    mesh.customDepthMaterial = new THREE.MeshDepthMaterial();
+    mesh.customDepthMaterial = new MeshDepthMaterial();
     mesh.customDepthMaterial.onBeforeCompile = (shader) => {
       shader.vertexShader = shader.vertexShader.replace(
         "void main() {",
@@ -286,10 +311,10 @@ class InstancedMouseEffect {
         ...uniforms,
       };
     };
-    mesh.customDepthMaterial.depthPacking = THREE.RGBADepthPacking;
+    mesh.customDepthMaterial.depthPacking = RGBADepthPacking;
     rendering.scene.add(mesh);
 
-    let t1 = gsap.timeline();
+    const t1 = gsap.timeline();
     t1.to(
       uniforms.uAnimate,
       {
@@ -309,41 +334,38 @@ class InstancedMouseEffect {
     this.animation = t1;
 
     // Events
-    const hitplane = new THREE.Mesh(
-      new THREE.PlaneGeometry(),
-      new THREE.MeshBasicMaterial(),
-    );
+    const hitplane = new Mesh(new PlaneGeometry(), new MeshBasicMaterial());
     hitplane.scale.setScalar(20);
     hitplane.rotation.x = -Math.PI / 2;
     hitplane.updateMatrix();
     hitplane.updateMatrixWorld();
-    let raycaster = new THREE.Raycaster();
+    const raycaster = new Raycaster();
 
-    let mouse = new THREE.Vector2();
-    let v2 = new THREE.Vector2();
+    const mouse = new Vector2();
+    const v2 = new Vector2();
     window.addEventListener("mousemove", (ev) => {
-      let x = ev.clientX / window.innerWidth - 0.5;
-      let y = ev.clientY / window.innerHeight - 0.5;
+      const x = ev.clientX / window.innerWidth - 0.5;
+      const y = ev.clientY / window.innerHeight - 0.5;
 
       v2.x = x * 2;
       v2.y = -y * 2;
       raycaster.setFromCamera(v2, rendering.camera);
 
-      let intersects = raycaster.intersectObject(hitplane);
+      const intersects = raycaster.intersectObject(hitplane);
 
       if (intersects.length > 0) {
-        let first = intersects[0];
+        const first = intersects[0];
         mouse.x = first.point.x;
         mouse.y = first.point.z;
         // mouse.copy(first.point)
       }
     });
 
-    let vel = new THREE.Vector2();
+    const vel = new Vector2();
     const tick = (t, _delta) => {
       uTime.value = t;
 
-      let v3 = new THREE.Vector2();
+      const v3 = new Vector2();
       v3.copy(mouse);
       v3.sub(uniforms.uPos0.value);
       v3.multiplyScalar(0.08);
@@ -382,4 +404,4 @@ if (process.env.NODE_ENV === "development") {
 
 export default InstancedMouseEffect;
 
-window.InstancedMouseEffect = InstancedMouseEffect;
+window["InstancedMouseEffect"] = InstancedMouseEffect;

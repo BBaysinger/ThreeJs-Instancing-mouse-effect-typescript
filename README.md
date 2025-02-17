@@ -23,10 +23,10 @@ yarn dev
 
 ### Files && comments
 
-| file         | Description               |
-| ------------ | ------------------------- |
-| demo.js      | The meat of the demo      |
-| rendering.js | All the threeJS rendering |
+| file                    | Description               |
+| ----------------------- | ------------------------- |
+| InstancedMouseEffect.js | The meat of the demo      |
+| rendering.js            | All the threeJS rendering |
 
 ## Misc
 
