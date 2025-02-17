@@ -66,7 +66,7 @@ class RoundedBoxGeometry extends THREE.BufferGeometry{
     var
       cornerVerts = [],
       cornerNormals = [],
-      normal = new THREE.Vector3(),
+      // normal = new THREE.Vector3(),
       vertex = new THREE.Vector3(),
       vertexPool = [],
       normalPool = [],
@@ -202,7 +202,7 @@ class RoundedBoxGeometry extends THREE.BufferGeometry{
 
     function doCorners() {
 
-      var indexInd = 0;
+      // var indexInd = 0;
 
 
       var flips = [
