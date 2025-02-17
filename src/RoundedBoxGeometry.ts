@@ -478,4 +478,4 @@ class RoundedBoxGeometry extends BufferGeometry {
   }
 }
 
-export default RoundedBox;
+export default RoundedBoxGeometry;
